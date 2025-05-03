@@ -1,0 +1,326 @@
+{% extends 'books/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="floating-books">
+        <div class="book-animation"></div>
+        <div class="book-animation"></div>
+        <div class="book-animation"></div>
+    </div>
+    <div class="auth-box">
+        <div class="auth-header">
+            <div class="book-icon">📖</div>
+            <h2>Create Account</h2>
+            <p>Join our community of readers</p>
+        </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                <input type="text" name="username" id="id_username" required class="form-control">
+                <small class="form-text">Choose a unique username</small>
+            </div>
+            <div class="form-group">
+                <label for="id_password1">Password</label>
+                <input type="password" name="password1" id="id_password1" required class="form-control">
+                <small class="form-text">Use a strong password</small>
+            </div>
+            <div class="form-group">
+                <label for="id_password2">Confirm Password</label>
+                <input type="password" name="password2" id="id_password2" required class="form-control">
+                <small class="form-text">Enter the same password again</small>
+            </div>
+            <div class="form-group">
+                <label for="id_mobile_number">Mobile Number</label>
+                <input type="text" name="mobile_number" id="id_mobile_number" required class="form-control">
+                <small class="form-text">Enter your mobile number</small>
+            </div>
+            <button type="submit" class="auth-button">
+                <span>{% if otp_sent %}Verify OTP{% else %}Send OTP{% endif %}</span>
+                <div class="button-effect"></div>
+            </button>
+        </form>
+        <div class="auth-footer">
+            <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, rgb(77, 161, 169), rgb(121, 215, 190));
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Floating Books Animation */
+    .floating-books {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    .book-animation {
+        position: absolute;
+        width: 60px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+        animation: float 15s infinite;
+        backdrop-filter: blur(5px);
+    }
+
+    .book-animation:nth-child(1) {
+        top: 20%;
+        left: 20%;
+        animation-delay: 0s;
+        transform: rotate(15deg);
+    }
+
+    .book-animation:nth-child(2) {
+        top: 50%;
+        right: 20%;
+        animation-delay: 5s;
+        transform: rotate(-15deg);
+    }
+
+    .book-animation:nth-child(3) {
+        bottom: 20%;
+        left: 40%;
+        animation-delay: 10s;
+        transform: rotate(25deg);
+    }
+
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0) rotate(0deg);
+        }
+        25% {
+            transform: translateY(-50px) rotate(5deg);
+        }
+        50% {
+            transform: translateY(0) rotate(-5deg);
+        }
+        75% {
+            transform: translateY(50px) rotate(5deg);
+        }
+    }
+
+    .auth-box {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 450px;
+        backdrop-filter: blur(10px);
+        transform: translateY(0);
+        animation: boxAppear 0.6s ease-out;
+    }
+
+    @keyframes boxAppear {
+        0% {
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .book-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .auth-header h2 {
+        color: rgb(77, 161, 169);
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .auth-header p {
+        color: #718096;
+        font-size: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: rgb(77, 161, 169);
+        font-weight: 500;
+        transform: translateY(0);
+        transition: all 0.3s ease;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid rgb(121, 215, 190);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .form-control:focus {
+        border-color: rgb(77, 161, 169);
+        box-shadow: 0 0 0 3px rgba(77, 161, 169, 0.1);
+        outline: none;
+    }
+
+    .form-text {
+        display: block;
+        margin-top: 0.25rem;
+        color: #718096;
+        font-size: 0.875rem;
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
+    }
+
+    .form-control:focus + label {
+        transform: translateY(-5px);
+        color: rgb(77, 161, 169);
+    }
+
+    .form-control:focus ~ .form-text {
+        opacity: 1;
+    }
+
+    .auth-button {
+        width: 100%;
+        padding: 0.75rem;
+        background: linear-gradient(135deg, rgb(77, 161, 169), rgb(121, 215, 190));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(77, 161, 169, 0.4);
+    }
+
+    .button-effect {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease-out, height 0.6s ease-out;
+    }
+
+    .auth-button:hover .button-effect {
+        width: 200%;
+        height: 200%;
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 2rem;
+        color: #718096;
+    }
+
+    .auth-footer a {
+        color: rgb(77, 161, 169);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .auth-footer a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -2px;
+        left: 0;
+        background: rgb(121, 215, 190);
+        transition: width 0.3s ease;
+    }
+
+    .auth-footer a:hover::after {
+        width: 100%;
+    }
+
+    .alert {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+        animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+        0% {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .alert-success {
+        background: rgba(198, 246, 213, 0.9);
+        color: #2f855a;
+        border: 1px solid #9ae6b4;
+    }
+
+    .alert-error {
+        background: rgba(254, 215, 215, 0.9);
+        color: #c53030;
+        border: 1px solid #feb2b2;
+    }
+</style>
+{% endblock %} 
